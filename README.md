@@ -18,24 +18,18 @@
 
 ## 📌 Overview
 
-Linux file capabilities & setuid/setgid auditor
+OCapAudit is a Linux file-capabilities and SetUID/SetGID auditor that works both live and offline against a mounted image, chroot or disk via --root. It reads the security.capability xattr natively with a hand-written decoder for VFS cap v1/v2/v3 and enumerates setuid binaries, applying rules for dangerous capabilities on writable binaries, GTFOBins-style risks and missing nosuid mounts. It is strictly read-only — remediation commands are only printed, never executed — and maps findings to CWE and MITRE ATT&CK T1548.
 
 ---
 
 ## ✨ Features
 
-- Offline (--root image / chroot / mounted disk) and live (/usr /bin /sbin /opt custom) tree scanning
-- Native security.capability xattr reader with a hand-written decoder for VFS cap v1 / v2 / v3 (namespaced rootid) structures — no external libs
-- `getcap -r` output parser (old "= cap+ep" and new "cap=ep" syntaxes) + optional getcap fallback
-- SetUID / SetGID enumeration via lstat mode bits, ownership, hardlink, ELF / shebang classification
-- Ruleset: dangerous caps on writable / user-owned binaries, setuid interpreters & scripts, caps in tmp / home paths, GTFOBins-style risky binaries, full-cap sets, inheritable caps, namespaced caps
-- fstab / mountinfo analysis for missing nosuid
-- Live process ambient / inheritable cap audit
-- CWE + MITRE ATT&CK T1548 mapping, severity, printed-only remediation (setcap -r / chmod)
-- Baseline snapshots + drift diff
-- Exports TXT / Markdown / JSON / CSV / SARIF 2.1.0
-- Full CLI with CI gates (--fail-on, --min-severity)
-- --demo self-test with a synthetic temp tree
+- Live and offline (--root image/chroot) capability and setuid/setgid scanning
+- Native security.capability xattr reader decoding VFS cap v1/v2/v3
+- getcap -r output parsing plus optional getcap fallback
+- Rules for dangerous caps on writable binaries, setuid scripts and GTFOBins risks
+- fstab/mountinfo nosuid analysis and live process ambient/inheritable cap audit
+- Baseline snapshots with drift diff and export TXT/MD/JSON/CSV/SARIF
 
 ---
 
@@ -49,7 +43,10 @@ Linux file capabilities & setuid/setgid auditor
 ## 🚀 Usage
 
 ```bash
-./OCapAudit
+./OCapAudit --scan
+./OCapAudit --root /mnt/image --scan --format json -o report.json --fail-on high
+./OCapAudit --caps-only --path /usr/bin
+./OCapAudit --help
 ```
 
 ---
